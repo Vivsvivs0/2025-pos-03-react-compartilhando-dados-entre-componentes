@@ -1,10 +1,11 @@
 "use client";
 
 import type React from "react";
-
 import { useEffect, useState } from "react";
 import dados, { TarefaInterface } from "@/data";
-import Cabecalho from "@/componentes/Cabecalhot";
+import ModalTarefa from "@/componentes/ModalTarefas";
+import Cabecalho from "@/componentes/Cabecalho";
+
 
 interface TarefaProps {
 	titulo: string;
@@ -16,8 +17,8 @@ const Tarefa: React.FC<TarefaProps> = ({ titulo, concluido }) => {
 
 	const classeCard = `p-3 mb-3 rounded-lg shadow-md hover:cursor-pointer hover:border ${
 		estaConcluido
-			? "bg-gray-800 hover:border-gray-800"
-			: "bg-gray-400 hover:border-gray-400"
+			? "bg-pink-800 hover:border-pink-800"
+			: "bg-pink-400 hover:border-pink-400"
 	}`;
 
 	const classeCorDoTexto = estaConcluido ? "text-amber-50" : "";
@@ -55,15 +56,38 @@ const Tarefas: React.FC<TareafasProps> = ({ dados }) => {
 	);
 };
 
-const Home = () => {
-	const tarefas: TarefaInterface[] = dados;
-
+export default function Home() {
+	const [tarefas, setTarefas] = useState<TarefaInterface[]>(dados);
+	const [mostrarModal, setMostrarModal] = useState(false);
+  
+	const adicionarTarefa = (titulo: string) => {
+	  const novaTarefa: TarefaInterface = {
+		id: tarefas.length + 1,
+		title: titulo,
+		completed: false,
+	  };
+	  setTarefas([...tarefas, novaTarefa]);
+	};
+  
 	return (
-		<div className="container mx-auto p-4">
-			<Cabecalho />
-			<Tarefas dados={tarefas} />
-		</div>
+	  <div className="container mx-auto p-4">
+		<Cabecalho />
+  
+		<button
+		  onClick={() => setMostrarModal(true)}
+		  className="bg-pink-700 text-white px-4 py-2 rounded mb-4 hover:bg-pink-800 cursor-pointer"
+		>
+		  Nova Tarefa
+		</button>
+  
+		<Tarefas dados={tarefas} />
+  
+		{mostrarModal && (
+		  <ModalTarefa
+			aoFechar={() => setMostrarModal(false)}
+			aoAdicionar={adicionarTarefa}
+		  />
+		)}
+	  </div>
 	);
-};
-
-export default Home;
+  }
